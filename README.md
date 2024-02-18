@@ -2,6 +2,8 @@
 
 An Electron application with React and TypeScript
 
+demo:<https://webrtc.github.io/samples/src/content/getusermedia/record/>
+
 ## Recommended IDE Setup
 
 - [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
@@ -11,13 +13,13 @@ An Electron application with React and TypeScript
 ### Install
 
 ```bash
-$ pnpm install
+pnpm install
 ```
 
 ### Development
 
 ```bash
-$ pnpm dev
+pnpm dev
 ```
 
 ### Build

@@ -2,18 +2,22 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { writeFile, existsSync, mkdirSync } from 'fs'
 
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
+    // fullscreen: true,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      contextIsolation: false,
+      nodeIntegration: true,
+      sandbox: false // 此处设置为 false，否则无法使用 getUserMedia
     }
   })
 
@@ -51,6 +55,26 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+  ipcMain.on('file:writeFile', (event, data: Buffer) => {
+    // 获取程序所在的执行目录
+    const videoPath = join(app.getAppPath(), 'video')
+
+    // 如果目录不存在，则创建目录
+    if (!existsSync(videoPath)) {
+      mkdirSync(videoPath)
+    }
+    // const fileName = join(app.getPath('downloads'), `vid-${Date.now()}.webm`)
+    const fileName = join(videoPath, `vid-${Date.now()}.webm`)
+
+    writeFile(fileName, data, async (err) => {
+      if (err) {
+        console.error('file:writeFile', err)
+        event.reply('file:writeFile', { error: err })
+      } else {
+        event.reply('file:writeFile', { success: true })
+      }
+    })
+  })
 
   createWindow()
 
